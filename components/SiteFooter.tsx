@@ -1,25 +1,19 @@
 import Link from 'next/link'
 
-const COLS: [string, [string, string][]][] = [
-  ['Venue booking', [['/venues', 'Venues and tariffs'], ['/availability', 'Check available dates'], ['/register', 'Register as an organizer'], ['/login', 'Sign in']]],
-  ['Information', [['/notices', 'Notices and tenders'], ['/events', 'Events'], ['/contact', 'Contact the office']]],
-]
+const LINKS: [string, string][] = [['/', 'Home'], ['/venues', 'Venues and tariffs'], ['/availability', 'Check dates'], ['/notices', 'Notices'], ['/contact', 'Contact']]
 
 export default function SiteFooter() {
   return (
-    <footer className="mt-20 bg-dark text-slate-300">
-      <div className="wrap py-12 grid gap-10 sm:grid-cols-[1.4fr_1fr_1fr]">
-        <div>
-          <p className="font-black text-white text-xl leading-snug">West Bengal Trade Promotion Organisation</p>
-          <p className="mt-2 max-w-[34ch]">Government of West Bengal. Venue bookings for Milan Mela Prangan, Kolkata.</p>
+    <footer className="mt-16">
+      <div className="footbar">
+        <div className="wrap py-4 flex flex-wrap items-center justify-between gap-3">
+          <ul className="flex flex-wrap">
+            {LINKS.map(([href, l], i) => <li key={href} className={i ? 'border-l border-white/40' : ''}><Link href={href} className="block px-4 py-1 font-semibold">{l}</Link></li>)}
+          </ul>
+          <p className="text-sm">A Government of West Bengal Undertaking</p>
         </div>
-        {COLS.map(([h, links]) => (
-          <div key={h}>
-            <p className="eyebrow !text-blue-300 mb-3">{h}</p>
-            <ul className="space-y-2">{links.map(([href, l]) => <li key={href}><Link href={href} className="!text-slate-200 hover:!text-white">{l}</Link></li>)}</ul>
-          </div>
-        ))}
       </div>
+      <p className="wrap py-5 text-sm text-muted">© {new Date().getFullYear()} West Bengal Trade Promotion Organisation. All rights reserved.</p>
     </footer>
   )
 }

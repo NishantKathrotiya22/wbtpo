@@ -54,9 +54,9 @@ export default function MonthCalendar({
       </table>
       <p className="key mt-3 text-sm text-muted flex flex-wrap gap-x-5 gap-y-1">
         <span><i style={{ background: '#ffffff' }} />Available</span>
-        <span><i style={{ background: '#fef3c7' }} />On hold (application being processed)</span>
-        <span><i style={{ background: '#dbeafe' }} />Booked</span>
-        <span><i style={{ background: '#fee2e2' }} />Unavailable</span>
+        <span><i style={{ background: '#fff1c9' }} />On hold (application being processed)</span>
+        <span><i style={{ background: '#e8d2b0' }} />Booked</span>
+        <span><i style={{ background: '#f8d4d0' }} />Unavailable</span>
       </p>
     </div>
   )

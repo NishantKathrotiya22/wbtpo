@@ -5,7 +5,7 @@ import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, Info, TriangleAlert, 
 export const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ')
 
 /* ---------- Button ---------- */
-type Variant = 'primary' | 'secondary' | 'danger' | 'light' | 'ghost-light'
+type Variant = 'primary' | 'secondary' | 'danger' | 'light' | 'ghost-light' | 'brand'
 type BtnProps = { variant?: Variant; size?: 'md' | 'sm'; full?: boolean; stack?: boolean; className?: string; children: React.ReactNode }
 const btnClass = ({ variant = 'primary', size = 'md', full, stack, className }: BtnProps) =>
   cx('btn', variant !== 'primary' && `btn-${variant}`, size === 'sm' && 'btn-sm', full && 'btn-full', stack && 'btn-stack', className)
@@ -27,11 +27,11 @@ export function PageHeader({ eyebrow, title, description, actions, back }: {
   return (
     <header className="mb-8">
       {back && <Link href={back.href} className="inline-flex items-center gap-1.5 font-semibold text-sm mb-4 no-underline"><ArrowLeft size={16} />{back.label}</Link>}
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="page-title flex flex-wrap items-end justify-between gap-4 w-full">
         <div className="max-w-[46rem]">
-          {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
-          <h1 className="text-[clamp(1.75rem,3.6vw,2.5rem)]">{title}</h1>
-          {description && <p className="mt-3 text-lg text-muted">{description}</p>}
+          {eyebrow && <p className="eyebrow mb-1">{eyebrow}</p>}
+          <h1>{title}</h1>
+          {description && <p className="mt-2 text-[1.05rem] text-muted">{description}</p>}
         </div>
         {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
       </div>
@@ -46,7 +46,7 @@ export function Section({ title, description, action, children, className }: {
     <section className={cx('mb-10 md:mb-12', className)}>
       {(title || action) && (
         <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
-          <div>{title && <h2 className="text-[1.6rem]">{title}</h2>}{description && <p className="text-muted mt-1">{description}</p>}</div>
+          <div>{title && <h2 className="text-brown">{title}</h2>}{description && <p className="text-muted mt-1">{description}</p>}</div>
           {action}
         </div>
       )}
@@ -55,8 +55,8 @@ export function Section({ title, description, action, children, className }: {
   )
 }
 
-export function Card({ children, className, pad = true, soft, as: Tag = 'div' }: { children: React.ReactNode; className?: string; pad?: boolean; soft?: boolean; as?: 'div' | 'aside' | 'section' | 'article' | 'li' }) {
-  return <Tag className={cx('card', pad && 'card-pad', soft && 'card-soft', className)}>{children}</Tag>
+export function Card({ children, className, pad = true, soft, as: Tag = 'div', id }: { children: React.ReactNode; className?: string; pad?: boolean; soft?: boolean; as?: 'div' | 'aside' | 'section' | 'article' | 'li'; id?: string }) {
+  return <Tag id={id} className={cx('card scroll-mt-6', pad && 'card-pad', soft && 'card-soft', className)}>{children}</Tag>
 }
 
 export function DataTable({ children, empty }: { children: React.ReactNode; empty?: React.ReactNode }) {
@@ -98,11 +98,11 @@ export function EmptyState({ title, children, action }: { title: string; childre
 export function Stat({ label, value, hint, icon: Icon, tone = 'info' }: { label: string; value: React.ReactNode; hint?: string; icon?: LucideIcon; tone?: 'info' | 'ok' | 'hold' | 'bad' }) {
   const bg = { info: 'bg-soft text-primary', ok: 'bg-ok-soft text-ok', hold: 'bg-hold-soft text-hold', bad: 'bg-bad-soft text-bad' }[tone]
   return (
-    <Card className="flex items-start gap-4">
-      {Icon && <span className={cx('grid place-items-center size-12 rounded-2xl shrink-0', bg)}><Icon size={24} aria-hidden /></span>}
+    <Card className="flex items-start gap-4 !border-l-4 !border-l-brand">
+      {Icon && <span className={cx('grid place-items-center size-12 rounded shrink-0', bg)}><Icon size={24} aria-hidden /></span>}
       <div className="min-w-0">
         <p className="text-sm font-bold text-muted">{label}</p>
-        <p className="text-[1.75rem] font-black leading-tight tabular-nums break-words">{value}</p>
+        <p className="text-[1.6rem] font-bold leading-tight tabular-nums break-words">{value}</p>
         {hint && <p className="text-sm text-muted">{hint}</p>}
       </div>
     </Card>
@@ -114,11 +114,11 @@ export function ResourceCard({ href, icon: Icon, label, title, children, badge }
   return (
     <Link href={href} className="card card-pad card-lift group block no-underline text-ink hover:text-ink">
       <div className="flex items-start justify-between">
-        <span className="grid place-items-center size-12 rounded-2xl bg-soft text-primary"><Icon size={24} aria-hidden /></span>
+        <span className="grid place-items-center size-12 rounded bg-soft text-primary"><Icon size={24} aria-hidden /></span>
         {badge}
       </div>
       {label && <p className="eyebrow mt-4">{label}</p>}
-      <p className={cx('text-[1.15rem] font-black leading-snug', !label && 'mt-4')}>{title}</p>
+      <p className={cx('text-[1.15rem] font-bold leading-snug', !label && 'mt-4')}>{title}</p>
       {children && <p className="text-muted mt-1">{children}</p>}
       <span className="mt-3 inline-flex items-center gap-1.5 font-bold text-primary transition-transform group-hover:translate-x-1">Open <ArrowRight size={16} aria-hidden /></span>
     </Link>
@@ -159,20 +159,20 @@ export function Faq({ items }: { items: [string, React.ReactNode][] }) {
 export function DarkPanel({ eyebrow, title, children }: { eyebrow?: string; title: string; children: React.ReactNode }) {
   return (
     <section className="panel-dark p-7 md:p-10">
-      {eyebrow && <p className="eyebrow !text-blue-300">{eyebrow}</p>}
-      <h2 className="mt-2 max-w-[28ch]">{title}</h2>
+      {eyebrow && <p className="eyebrow !text-amber-300">{eyebrow}</p>}
+      <h2 className="mt-2 max-w-[32ch]">{title}</h2>
       <div className="mt-6">{children}</div>
     </section>
   )
 }
 export const Chip = ({ children }: { children: React.ReactNode }) => (
-  <span className="rounded-full border border-white/20 bg-white/10 px-4 py-2 font-bold text-[.95rem] text-white">{children}</span>
+  <span className="rounded border border-white/30 bg-white/10 px-4 py-2 font-semibold text-[.95rem] text-white">{children}</span>
 )
 
 export function SupportPanel({ title, children, actions }: { title: string; children: React.ReactNode; actions: React.ReactNode }) {
   return (
     <section className="panel-support p-7 md:p-10 flex flex-wrap items-center justify-between gap-6">
-      <div className="max-w-[40rem]"><h2>{title}</h2><p className="mt-2 text-blue-100 text-lg">{children}</p></div>
+      <div className="max-w-[40rem]"><h2>{title}</h2><p className="mt-2 text-amber-100 text-lg">{children}</p></div>
       <div className="flex flex-wrap gap-3">{actions}</div>
     </section>
   )

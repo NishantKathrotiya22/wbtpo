@@ -12,7 +12,7 @@ export default async function Notices() {
       <PageHeader eyebrow="Information" title="Notices and tenders" />
       <div className="grid gap-4">
         {rows.map((n) => (
-          <Card as="article" key={n.id}>
+          <Card as="article" key={n.id} id={`n-${n.id}`}>
             <p className="text-sm text-muted font-semibold">{fmtDate(n.publish_on)} · <span className="capitalize">{n.category}</span></p>
             <h2 className="text-xl mt-1">{n.title}</h2>
             <p className="mt-2 whitespace-pre-line text-muted">{n.body}</p>
