@@ -1,34 +1,35 @@
-import Link from 'next/link'
 import type { Metadata } from 'next'
+import { Users, Maximize2 } from 'lucide-react'
 import { venues } from '@/lib/queries'
 import { inr } from '@/lib/dates'
+import { Alert, Button, Card, Page, PageHeader } from '@/components/ui'
 
 export const metadata: Metadata = { title: 'Venues and tariffs' }
 
 export default async function Venues() {
   const vs = await venues()
   return (
-    <div className="wrap py-12">
-      <h1>Venues and tariffs</h1>
-      <p className="mt-3 max-w-[60ch] text-muted">Rates are per day, exclusive of GST. Power, generator use, security and other services are charged separately as per the tariff schedule.</p>
-      <div className="mt-8 divide-y divide-line border-y border-line">
+    <Page>
+      <PageHeader eyebrow="Venues" title="Venues and tariffs" description="Pick the venue that fits your event, then check its dates." />
+      <Alert tone="info" className="mb-8">Rates are per day and exclude GST. Power, generator use, security and other services are charged separately as per the tariff schedule.</Alert>
+      <div className="grid gap-6 md:grid-cols-2">
         {vs.map((v) => (
-          <article key={v.id} className="py-6 grid gap-4 md:grid-cols-[1fr_16rem]">
-            <div>
-              <p className="eyebrow">{v.kind}</p>
-              <h2 className="mt-1"><Link href={`/venues/${v.slug}`} className="text-ink no-underline hover:underline">{v.name}</Link></h2>
-              <p className="mt-2 max-w-[62ch]">{v.description}</p>
-              <p className="mt-2 text-sm text-muted">{v.amenities.join(' · ')}</p>
+          <Card as="article" key={v.id} className="flex flex-col">
+            <p className="eyebrow">{v.kind}</p>
+            <h2 className="text-2xl mt-1">{v.name}</h2>
+            <p className="mt-3 text-muted">{v.description}</p>
+            <p className="mt-3 text-sm text-muted">{v.amenities.join(' · ')}</p>
+            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-1 font-semibold">
+              <span className="inline-flex items-center gap-2"><Users size={18} className="text-primary" aria-hidden />{v.capacity.toLocaleString('en-IN')} people</span>
+              {v.area_sqft && <span className="inline-flex items-center gap-2"><Maximize2 size={18} className="text-primary" aria-hidden />{v.area_sqft.toLocaleString('en-IN')} sq ft</span>}
             </div>
-            <dl className="text-sm grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 self-start">
-              <dt className="text-muted">Capacity</dt><dd>{v.capacity.toLocaleString('en-IN')}</dd>
-              {v.area_sqft && (<><dt className="text-muted">Area</dt><dd>{v.area_sqft.toLocaleString('en-IN')} sq ft</dd></>)}
-              <dt className="text-muted">Tariff</dt><dd className="font-semibold">{inr(v.tariff_per_day)} / day</dd>
-              <dd className="col-span-2 mt-2"><Link href={`/venues/${v.slug}`}>Details and calendar</Link></dd>
-            </dl>
-          </article>
+            <div className="mt-auto pt-6 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xl font-black">{inr(v.tariff_per_day)} <span className="text-base font-medium text-muted">per day</span></p>
+              <Button href={`/venues/${v.slug}`} size="sm">View dates</Button>
+            </div>
+          </Card>
         ))}
       </div>
-    </div>
+    </Page>
   )
 }

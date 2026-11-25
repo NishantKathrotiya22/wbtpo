@@ -1,10 +1,10 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { one } from '@/lib/db'
 import { entriesFor, type Venue } from '@/lib/queries'
 import { inr, monthOf } from '@/lib/dates'
 import MonthCalendar from '@/components/MonthCalendar'
+import { Button, Card, Facts, Page, PageHeader, Section } from '@/components/ui'
 
 type P = { params: Promise<{ slug: string }>; searchParams: Promise<{ m?: string }> }
 const get = (slug: string) => one<Venue>('select * from venues where slug=$1 and active', [slug])
@@ -21,29 +21,24 @@ export default async function VenuePage({ params, searchParams }: P) {
   const m = monthOf((await searchParams).m)
   const entries = await entriesFor(v.id, m.first, m.last)
   return (
-    <div className="wrap py-12">
-      <p className="text-sm"><Link href="/venues">← All venues</Link></p>
-      <p className="eyebrow mt-4">{v.kind}</p>
-      <h1 className="mt-1">{v.name}</h1>
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_22rem]">
+    <Page>
+      <PageHeader back={{ href: '/venues', label: 'All venues' }} eyebrow={v.kind} title={v.name} description={v.description} />
+      <div className="grid gap-8 lg:grid-cols-[1fr_22rem] items-start">
         <div>
-          <p className="max-w-[62ch] text-lg">{v.description}</p>
-          <h2 className="mt-10 mb-3">Amenities</h2>
-          <ul className="columns-2 gap-8 list-disc pl-5 marker:text-brick">{v.amenities.map((a) => <li key={a}>{a}</li>)}</ul>
-          <h2 className="mt-10 mb-4">Availability</h2>
-          <MonthCalendar ym={m.ym} entries={entries} href={(ym) => `/venues/${v.slug}?m=${ym}`} />
+          <Section title="Available dates" description="White days are free. Pick your dates, then apply.">
+            <Card><MonthCalendar ym={m.ym} entries={entries} href={(ym) => `/venues/${v.slug}?m=${ym}`} /></Card>
+          </Section>
+          <Section title="Facilities">
+            <ul className="grid sm:grid-cols-2 gap-3">{v.amenities.map((a) => <li key={a} className="card card-pad !py-3 font-semibold">{a}</li>)}</ul>
+          </Section>
         </div>
-        <aside className="panel p-5 self-start">
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
-            <dt className="text-muted">Capacity</dt><dd>{v.capacity.toLocaleString('en-IN')} people</dd>
-            {v.area_sqft && (<><dt className="text-muted">Area</dt><dd>{v.area_sqft.toLocaleString('en-IN')} sq ft</dd></>)}
-            <dt className="text-muted">Tariff</dt><dd className="font-semibold">{inr(v.tariff_per_day)} per day</dd>
-          </dl>
+        <Card as="aside" className="lg:sticky lg:top-32">
+          <Facts items={[['Capacity', `${v.capacity.toLocaleString('en-IN')} people`], ['Area', v.area_sqft ? `${v.area_sqft.toLocaleString('en-IN')} sq ft` : ''], ['Tariff', <strong key="t">{inr(v.tariff_per_day)} per day</strong>]]} />
           <p className="text-sm text-muted mt-3">Excludes GST and charges for power and other services.</p>
-          <Link href={`/account/bookings/new?venue=${v.id}`} className="btn w-full mt-5">Apply to book this venue</Link>
-          <p className="text-sm text-muted mt-3">You need an organizer account to apply. <Link href="/register">Register</Link></p>
-        </aside>
+          <Button href={`/account/bookings/new?venue=${v.id}`} full className="mt-5">Apply to book this venue</Button>
+          <p className="text-sm text-muted mt-3 text-center">You need an organizer account. <a href="/register" className="font-bold">Register free</a></p>
+        </Card>
       </div>
-    </div>
+    </Page>
   )
 }

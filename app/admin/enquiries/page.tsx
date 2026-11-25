@@ -4,31 +4,32 @@ import { q } from '@/lib/db'
 import { fmtStamp } from '@/lib/dates'
 import { setEnquiryStatus } from '@/lib/actions'
 import StatusBadge from '@/components/StatusBadge'
+import { Button, Card, EmptyState, PageHeader } from '@/components/ui'
 
 export const metadata: Metadata = { title: 'Enquiries' }
 
 export default async function Enquiries() {
   await requireRole('super_admin', 'booking_manager')
-  const rows = await q<any>('select * from enquiries order by created_at desc limit 100')
+  const rows = await q<any>('select * from enquiries order by (status=\'new\') desc, created_at desc limit 100')
   return (
     <div>
-      <h1>Enquiries</h1>
-      <ul className="mt-6 divide-y divide-line border-y border-line">
+      <PageHeader eyebrow="Website" title="Enquiries" description="Questions sent through the Contact page. Call or email the person, then mark it replied." />
+      <div className="grid gap-4">
         {rows.map((e) => (
-          <li key={e.id} className="py-4 grid gap-2 md:grid-cols-[1fr_auto]">
-            <div>
-              <p><strong>{e.name}</strong> <span className="text-muted text-sm">· {fmtStamp(e.created_at)}</span> <StatusBadge status={e.status} /></p>
-              <p className="text-sm text-muted">{[e.email, e.phone].filter(Boolean).join(' · ')}</p>
-              <p className="mt-1 whitespace-pre-line max-w-[70ch]">{e.message}</p>
+          <Card as="article" key={e.id} className="flex flex-wrap justify-between gap-4">
+            <div className="min-w-0 max-w-[60ch]">
+              <p className="flex flex-wrap items-center gap-2"><strong className="text-lg">{e.name}</strong><StatusBadge status={e.status} /></p>
+              <p className="text-sm text-muted">{fmtStamp(e.created_at)} · {[e.phone, e.email].filter(Boolean).join(' · ')}</p>
+              <p className="mt-2 whitespace-pre-line">{e.message}</p>
             </div>
-            <div className="flex gap-3 text-sm self-start">
-              {e.status !== 'replied' && <form action={setEnquiryStatus.bind(null, e.id, 'replied')}><button className="text-brick hover:underline cursor-pointer">Mark replied</button></form>}
-              {e.status !== 'closed' && <form action={setEnquiryStatus.bind(null, e.id, 'closed')}><button className="text-brick hover:underline cursor-pointer">Close</button></form>}
+            <div className="flex gap-2 self-start">
+              {e.status !== 'replied' && <form action={setEnquiryStatus.bind(null, e.id, 'replied')}><Button size="sm">Mark replied</Button></form>}
+              {e.status !== 'closed' && <form action={setEnquiryStatus.bind(null, e.id, 'closed')}><Button variant="secondary" size="sm">Close</Button></form>}
             </div>
-          </li>
+          </Card>
         ))}
-        {!rows.length && <li className="py-6 text-muted">No enquiries yet.</li>}
-      </ul>
+        {!rows.length && <Card><EmptyState title="No enquiries yet" /></Card>}
+      </div>
     </div>
   )
 }

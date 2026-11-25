@@ -1,28 +1,29 @@
 import type { Metadata } from 'next'
+import { Download } from 'lucide-react'
 import { requireAdmin } from '@/lib/auth'
+import { Card, PageHeader } from '@/components/ui'
 
 export const metadata: Metadata = { title: 'Reports' }
 
 const R = [
   ['bookings', 'Bookings register', 'Every application with organizer, venue, dates, status and approved amount.'],
-  ['payments', 'Payments and receivables', 'Every instalment with due date, amount, received amount, outstanding balance and status.'],
-  ['utilisation', 'Venue utilisation', 'Confirmed and completed booking days per venue.'],
+  ['payments', 'Payments and receivables', 'Every instalment with due date, amount received and balance.'],
+  ['utilisation', 'Venue use', 'Confirmed and completed booking days for each venue.'],
 ]
 
 export default async function Reports() {
   await requireAdmin()
   return (
     <div>
-      <h1>Reports</h1>
-      <p className="mt-2 text-muted">Downloads open in Excel or any spreadsheet program (CSV).</p>
-      <ul className="mt-6 divide-y divide-line border-y border-line max-w-3xl">
+      <PageHeader eyebrow="Reports" title="Download reports" description="Files open in Excel or any spreadsheet program." />
+      <div className="grid gap-4 max-w-3xl">
         {R.map(([k, t, d]) => (
-          <li key={k} className="py-4 flex flex-wrap items-center justify-between gap-3">
-            <div><p className="font-semibold">{t}</p><p className="text-sm text-muted">{d}</p></div>
-            <a href={`/admin/export/${k}`} className="btn btn-quiet btn-sm">Download CSV</a>
-          </li>
+          <Card as="article" key={k} className="flex flex-wrap items-center justify-between gap-4">
+            <div><h2 className="text-xl">{t}</h2><p className="text-muted">{d}</p></div>
+            <a href={`/admin/export/${k}`} className="btn btn-secondary"><Download size={18} aria-hidden />Download</a>
+          </Card>
         ))}
-      </ul>
+      </div>
     </div>
   )
 }

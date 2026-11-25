@@ -25,3 +25,8 @@ Venue names, capacities, tariffs and notices are placeholders in `db/reset.ts`.
 
 ## Before production
 Change all demo passwords, set a real `SESSION_SECRET`, move `uploads/` to S3, add login rate limiting, run a security test.
+
+## UI system
+Design tokens (colours, radii, shadows) live once in `app/globals.css`, taken from `../realsee-as-your-service-DESIGN.md`.
+Every page is built from `components/ui.tsx` (Button, Card, PageHeader, Section, DataTable, Facts, Alert, EmptyState, Stat, ResourceCard, Journey, Checklist, Faq, DarkPanel, SupportPanel), plus `StatusBadge`, `BookingProgress`, `Field`, `ActionForm`.
+Add new screens from these; do not hand-write buttons or cards.

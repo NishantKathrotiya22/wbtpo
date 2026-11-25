@@ -1,10 +1,10 @@
-import Link from 'next/link'
 import type { Metadata } from 'next'
 import { entriesFor, venues } from '@/lib/queries'
 import { monthOf } from '@/lib/dates'
 import MonthCalendar from '@/components/MonthCalendar'
+import { Alert, Button, Card, Page, PageHeader } from '@/components/ui'
 
-export const metadata: Metadata = { title: 'Venue availability' }
+export const metadata: Metadata = { title: 'Check available dates' }
 
 export default async function Availability({ searchParams }: { searchParams: Promise<{ venue?: string; m?: string }> }) {
   const sp = await searchParams
@@ -13,19 +13,14 @@ export default async function Availability({ searchParams }: { searchParams: Pro
   const m = monthOf(sp.m)
   const entries = await entriesFor(v.id, m.first, m.last)
   return (
-    <div className="wrap py-12">
-      <h1>Venue availability</h1>
-      <p className="mt-3 max-w-[60ch] text-muted">Dates marked “On hold” are being processed for another organizer and may become free again if that application is not approved.</p>
-      <nav aria-label="Venue" className="mt-8 flex flex-wrap gap-2">
-        {vs.map((x) => (
-          <Link key={x.id} href={`/availability?venue=${x.slug}&m=${m.ym}`} aria-current={x.id === v.id ? 'page' : undefined}
-            className={`btn btn-sm ${x.id === v.id ? '' : 'btn-quiet'}`}>{x.name}</Link>
-        ))}
+    <Page>
+      <PageHeader eyebrow="Availability" title="Check available dates" description="Step 1: choose a venue. Step 2: look for white days. Step 3: apply." />
+      <nav aria-label="Venue" className="mb-6 flex flex-wrap gap-2">
+        {vs.map((x) => <Button key={x.id} href={`/availability?venue=${x.slug}&m=${m.ym}`} size="sm" variant={x.id === v.id ? 'primary' : 'secondary'}>{x.name}</Button>)}
       </nav>
-      <div className="mt-6">
-        <MonthCalendar ym={m.ym} entries={entries} href={(ym) => `/availability?venue=${v.slug}&m=${ym}`} />
-      </div>
-      <p className="mt-6"><Link href={`/account/bookings/new?venue=${v.id}`} className="btn">Apply to book {v.name}</Link></p>
-    </div>
+      <Card><MonthCalendar ym={m.ym} entries={entries} href={(ym) => `/availability?venue=${v.slug}&m=${ym}`} /></Card>
+      <Alert tone="info" className="mt-6">Days marked “On hold” are being processed for another organizer. They may become free again if that application is not approved.</Alert>
+      <div className="mt-8"><Button href={`/account/bookings/new?venue=${v.id}`}>Apply to book {v.name}</Button></div>
+    </Page>
   )
 }

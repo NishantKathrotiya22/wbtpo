@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Button } from './ui'
 import { addDays, monthOf, monthTitle, todayIST, weekdayMon0 } from '@/lib/dates'
 import type { Entry } from '@/lib/queries'
 
@@ -24,9 +24,9 @@ export default function MonthCalendar({
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <Link href={href(m.prev)} className="btn btn-quiet btn-sm" aria-label="Previous month">← Previous</Link>
-        <h3 aria-live="polite">{monthTitle(m.ym)}</h3>
-        <Link href={href(m.next)} className="btn btn-quiet btn-sm" aria-label="Next month">Next →</Link>
+        <Button href={href(m.prev)} variant="secondary" size="sm">← Previous</Button>
+        <h3 aria-live="polite" className="text-xl">{monthTitle(m.ym)}</h3>
+        <Button href={href(m.next)} variant="secondary" size="sm">Next →</Button>
       </div>
       <table className="cal">
         <thead><tr>{['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => <th key={d} scope="col">{d}</th>)}</tr></thead>
@@ -53,10 +53,10 @@ export default function MonthCalendar({
         </tbody>
       </table>
       <p className="key mt-3 text-sm text-muted flex flex-wrap gap-x-5 gap-y-1">
-        <span><i style={{ background: '#fffdf8' }} />Available</span>
-        <span><i style={{ background: '#f3e5c5' }} />On hold (application being processed)</span>
-        <span><i style={{ background: '#dbe6ef' }} />Booked</span>
-        <span><i style={{ background: '#ecd0cd' }} />Unavailable</span>
+        <span><i style={{ background: '#ffffff' }} />Available</span>
+        <span><i style={{ background: '#fef3c7' }} />On hold (application being processed)</span>
+        <span><i style={{ background: '#dbeafe' }} />Booked</span>
+        <span><i style={{ background: '#fee2e2' }} />Unavailable</span>
       </p>
     </div>
   )
